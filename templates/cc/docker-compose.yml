@@ -1,0 +1,20 @@
+version: '3.6'
+
+services:
+    creditcounter:
+        image: climatefriendlyacr.azurecr.io/cfcontainers/creditcounter/creditcounter:${CCTAG}
+        container_name: creditcounter
+        restart: always
+        environment:
+            - PGHOST=${PGHOST-cfr-azu-db01.postgres.database.azure.com}
+            - PGPORT=${PGPORT-5432}
+            - PGDATABASE=${PGDATABASE-gis1}
+            - PGUSER=${PGUSER-cc@cfr-azu-db01}
+            - PGPASSWORD=@@{PGPASSWORD}
+        volumes:
+          - ./ccdata:/data
+        ports:
+            - 8011:8000
+        logging:
+          driver: "${CCLOGGERTYPE}"
+          

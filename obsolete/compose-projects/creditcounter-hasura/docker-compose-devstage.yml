@@ -1,0 +1,50 @@
+version: '3.6'
+
+services:
+    # Workflow system
+    #flowable-aio:
+    #    image: flowable/all-in-one
+    #    container_name: flowable_all
+    #    environment:
+    #        - SERVER_PORT=${SERVER_PORT:-9977}
+    #        - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
+    #        - SPRING_DATASOURCE_URL=jdbc:postgresql://${flowable_pg_server_fqdn}:5432/flowable
+    #        - SPRING_DATASOURCE_USERNAME=${flowable_spring_datasource_username}
+    #        - SPRING_DATASOURCE_PASSWORD=${flowable_spring_datasource_password}
+    #        - FLOWABLE_COMMON_APP_IDM-URL=${FLOWABLE_REDIRECT_IDM_URL-http://flowable-aio:8080/flowable-idm}
+    #        - FLOWABLE_COMMON_APP_IDM-REDIRECT-URL=${external_server_base_url}/flowable-idm
+    #    volumes:
+    #      - /data:/data
+    #    ports:
+    #        - 8010:8080
+    #    entrypoint: ["/wait-for-something.sh", "${flowable_pg_server_fqdn}", "5432", "PostgreSQL", "/opt/tomcat/bin/catalina.sh", "run"]
+
+    creditcounter:
+        image: climatefriendlyacr.azurecr.io/cfcontainers/creditcounter/creditcounter-dev:dev
+        container_name: creditcounter
+        restart: always
+        environment:
+            - PGHOST=${PGHOST-cfr-azu-db01.postgres.database.azure.com}
+            - PGPORT=${PGPORT-5432}
+            - PGDATABASE=${PGDATABASE-gis1}
+            - PGUSER=${PGUSER-cc@cfr-azu-db01}
+            - PGPASSWORD=${PGPASSWORD}
+        volumes:
+          - ./ccdata:/data
+        ports:
+            - 8011:8000
+        logging:
+          driver: "syslog"
+
+    hasura:
+        image: hasura/graphql-engine:v1.3.2
+        container_name: hasura
+        environment:
+            - HASURA_GRAPHQL_DATABASE_URL=postgres://${HASURAUSER}:${HASURAPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
+            - HASURA_GRAPHQL_ENABLE_CONSOLE=true 
+        ports:
+            - 8004:8080
+              #        logging:
+              # driver: "syslog"            
+
+          

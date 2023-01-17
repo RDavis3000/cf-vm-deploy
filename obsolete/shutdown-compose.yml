@@ -1,0 +1,42 @@
+---
+- hosts: "all"
+  become: "true"
+  roles:
+    - role: update_ubuntu
+      become: true
+    - role: "nickjj.docker"
+      become: True
+      tags: ["docker"]
+      docker__edition: "ce"
+      docker__channel: ["stable"]
+      docker__cron_jobs_prune_flags: "af"
+      docker__pip_dependencies:
+        - "python-setuptools"
+        - "python{{ '3' if ansible_python.version.major == 3 else '' }}-pip"
+      docker__default_pip_packages:
+        - name: "docker"
+          state: "{{ docker__pip_docker_state }}"
+        - name: "docker-compose"
+          version: "{{ docker__compose_version }}"
+          path: "/usr/local/bin/docker-compose"
+          src: "{{ docker__pip_virtualenv + '/bin/docker-compose' }}"
+          state: "{{ docker__pip_docker_compose_state }}"
+
+  tasks:
+    - name: Stop CC and Hasura
+      docker_compose:
+        project_src: "{{ base_directory }}compose-projects/creditcounter-hasura"
+        files:
+          - "docker-compose-{{ runtime_env }}.yml"
+        state: absent
+      vars:
+        ansible_python_interpreter: "/usr/bin/env python-docker"
+    - name: Stop Metabase
+      docker_compose:
+        project_src: "{{ base_directory }}compose-projects/metabase"
+        files:
+          - "{{ runtime_env }}-docker-compose.yml"
+        state: absent
+      vars:
+        ansible_python_interpreter: "/usr/bin/env python-docker"
+

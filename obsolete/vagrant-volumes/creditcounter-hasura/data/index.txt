@@ -1,0 +1,1 @@
+vagrant-volumes/creditcounter-hasura/data/

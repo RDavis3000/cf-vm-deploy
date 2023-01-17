@@ -1,0 +1,70 @@
+version: '3.6'
+
+services:
+    # Workflow system
+    #flowable-aio:
+    #    image: flowable/all-in-one
+    #    container_name: flowable_all
+    #    depends_on:
+    #        - flowable-db
+    #    environment:
+    #        - SERVER_PORT=${SERVER_PORT:-9977}
+    #        - SPRING_DATASOURCE_DRIVER-CLASS-NAME=org.postgresql.Driver
+    #        - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL:-jdbc:postgresql://flowable-db:5432/flowable}
+    #        - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME-flowable}
+    #        - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD-flowable}
+    #        - FLOWABLE_COMMON_APP_IDM-URL=${FLOWABLE_REDIRECT_IDM_URL-http://flowable-aio:8080/flowable-idm}
+    #        - FLOWABLE_EXPERIMENTAL_DEBUGGER_ENABLED=TRUE
+    #        - FLOWABLE_COMMON_APP_IDM-REDIRECT-URL=${external_server_base_url}/flowable-idm
+    #    volumes:
+    #      - /data:/data
+    #    ports:
+    #        - 8010:8080
+    #    entrypoint: ["/wait-for-something.sh", "flowable-db", "5432", "PostgreSQL", "/opt/tomcat/bin/catalina.sh", "run"]
+
+    # Postgres backend
+    gis1-db:
+        image: postgres:11-alpine
+        container_name: gis1-db
+        environment:
+            - POSTGRES_PASSWORD=gis1
+            - POSTGRES_USER=gis1
+            - POSTGRES_DB=gis1
+        ports:
+            - 8003:5432
+        volumes:
+            - gis_pgdata:/var/lib/postgresql/data
+            - ./hasura-init.sql:/docker-entrypoint-initdb.d/hasura-init.sql
+        command: postgres
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5        
+
+    # creditcounter
+    creditcounter:
+        image: climatefriendlyacr.azurecr.io/cfcontainers/creditcounter/creditcounter
+        container_name: creditcounter
+        restart: always
+        volumes:
+          - /data:/data
+        ports:
+            - 8011:8000
+
+    hasura:
+        image: hasura/graphql-engine:v1.3.2
+        container_name: hasura
+        environment:
+            - HASURA_GRAPHQL_DATABASE_URL=postgres://hasurauser:hasurauser@gis1-db/gis1
+            - HASURA_GRAPHQL_ENABLE_CONSOLE=true 
+        ports:
+            - 8004:8080
+        depends_on:
+            - gis1-db
+
+
+
+volumes:
+    gis_pgdata:
+

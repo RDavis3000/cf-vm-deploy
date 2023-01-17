@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  fullcam:
+    image: climatefriendlyacr.azurecr.io/climatefriendlyacr/fullcamhost/fullcamhost:${FULLCAMTAG}
+    container_name: fullcam
+    ports:
+        - 10005:8000
+    restart: always
+    environment:
+      - FULLCAM_PATH=/root/.wine/drive_c/windows/syswow64/FullCAM Public Release 2020
+      - FULLCAM_EXE=c:\windows\syswow64\FullCAM Public Release 2020\FullCAMCL.exe
+      - FULLCAM_ENVIRONMENT=Docker
+      - PGHOST=${CC_PGHOST:-cfr-azu-db01.postgres.database.azure.com}
+      - PGDATABASE=${CC_DATABASE:-gis1}
+      - PGPORT=${CC_PGPORT:-5432}
+      - PGUSER=${CC_DB_USER:-cc@cfr-azu-db01}
+      - PGPASSWORD=@@{CC_DB_PASSWORD}

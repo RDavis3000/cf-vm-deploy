@@ -1,0 +1,4 @@
+{
+  external_server_base_url: "https://flowable.climatefriendly.com",
+  runtime_env: "prod"
+}

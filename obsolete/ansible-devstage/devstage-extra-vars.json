@@ -1,0 +1,4 @@
+{
+  external_server_base_url: "https://metabase-dev.climatefriendly.com",
+  runtime_env: "devstage"
+}

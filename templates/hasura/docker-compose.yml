@@ -1,0 +1,16 @@
+version: '3.6'
+
+services:
+    hasura:
+        image: hasura/graphql-engine:${HASURA_VERSION_TAG}
+        container_name: hasura
+        restart: always
+        environment:
+            - HASURA_GRAPHQL_DATABASE_URL=postgres://@@{HASURAUSER}:@@{HASURAPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}
+            - HASURA_GRAPHQL_ENABLE_CONSOLE=true 
+        ports:
+            - 8004:8080
+        logging:
+          driver: "${CCLOGGERTYPE}"            
+
+          

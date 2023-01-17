@@ -1,0 +1,17 @@
+---
+- name: Update and upgrade apt packages
+  become: True
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+    autoclean: yes
+    autoremove: yes
+    update_cache_retries: 9
+#    force: yes
+- name: Install NGinx
+  become: True
+  apt:
+    name: nginx
+    state: present
+    cache_valid_time: 3600

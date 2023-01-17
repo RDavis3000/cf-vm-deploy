@@ -1,0 +1,6 @@
+fmit-docker-app
+
+Client ID: 0605aeb6-c5a4-4a57-9baa-54baee9e2b7c
+Directory Tenant ID: eee113f5-2e66-4c10-a9a8-980d763e22f3
+
+Password: 5CU]o_ihTPehTw982k[D=a37yBlSZd@@
